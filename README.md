@@ -31,6 +31,53 @@ This project demonstrates the end-to-end process of intercepting VoIP communicat
 
 The attack surface leverages the lack of end-to-end encryption in SIP/RTP protocols, demonstrating that WPA2 network-layer encryption alone is insufficient to protect VoIP communications from a passive attacker with the PSK.
 
+## Captured Evidence
+
+### 1. Capture Environment Setup
+Physical setup showing Wireshark live capture with the Alfa AWUS036ACH adapter connected, capturing SIP/RTP traffic in real-time.
+
+![Capture Environment](screenshots/01-capture-environment-setup.jpg)
+
+### 2. VoIP Server Dashboard (MagnusBilling)
+Server monitoring dashboard showing active users, concurrent calls (CC 1 | CPS 1), trunk utilization, and server resource metrics.
+
+![VoIP Server Dashboard](screenshots/02-voip-server-dashboard.png)
+
+### 3. SIP User Configuration
+MagnusBilling SIP user configuration panel showing the `demo` account with MicroSIP softphone registered as a client. Codec configuration: G.729, G.711A (alaw/ulaw), GSM.
+
+![SIP Configuration](screenshots/03-voip-server-sip-configuration.png)
+
+### 4. Wireshark Live Packet Capture
+Live capture on the Wi-Fi 2 interface showing mixed traffic: SIP signaling (INVITE, 401, ACK, 100 Trying), HTTP, TCP, TLS, NBNS, and UDP packets between the VoIP server and client.
+
+![Wireshark Capture](screenshots/04-wireshark-live-capture.png)
+
+### 5. RTP Streams Detected
+Wireshark RTP Streams window displaying 6 detected streams between `192.168.1.5` and `195.35.6.83` with G.711A codec, showing packet counts, jitter metrics, and delta timing analysis.
+
+![RTP Streams](screenshots/05-rtp-streams-detected.png)
+
+### 6. RTP Stream Analysis - Jitter/Delta Graph
+Graphical analysis of all 6 RTP streams plotting jitter, delta, difference, and skew values over arrival time. Consistent ~20ms delta confirms stable G.711A transmission.
+
+![RTP Analysis Graph](screenshots/06-rtp-stream-analysis-graph.png)
+
+### 7. RTP Stream Analysis - Packet-Level Detail
+Per-packet analysis of Stream 0 (`192.168.1.6:4008 -> 195.35.6.83:13890`) showing sequence numbers, delta timing, jitter, skew, and bandwidth. SSRC: `0x75f66e1a`, 1413 packets, 0 lost, duration: 28.24s.
+
+![RTP Analysis Packets](screenshots/07-rtp-stream-analysis-packets.png)
+
+### 8. RTP Player - Audio Waveform Playback
+Wireshark RTP Player showing decoded audio waveforms for the intercepted call streams. Both sides of the conversation are visible as separate waveforms, ready for full-duplex playback.
+
+![RTP Player](screenshots/08-rtp-player-audio-playback.png)
+
+### 9. Reconstructed VoIP Calls
+Wireshark VoIP Calls view showing 2 completed SIP calls from `<sip:demo@195.35.6.83>` with durations of 52s and 18s, both in `COMPLETED` state.
+
+![VoIP Calls](screenshots/09-voip-calls-reconstructed.png)
+
 ## Architecture
 
 ```
@@ -131,54 +178,6 @@ Alfa (Monitor):   Captures ALL 802.11 frames on the channel (promiscuous + monit
   - 2 completed SIP calls
   - Call durations: 00:00:52 and 00:00:18
   - State: `COMPLETED` with SIP flow: `INVITE 401 200 200`
-
-## Captured Evidence
-
-### 1. Capture Environment Setup
-Physical setup showing Wireshark live capture with the Alfa AWUS036ACH adapter connected, capturing SIP/RTP traffic in real-time.
-
-![Capture Environment](screenshots/01-capture-environment-setup.jpg)
-
-### 2. VoIP Server Dashboard (MagnusBilling)
-Server monitoring dashboard showing active users, concurrent calls (CC 1 | CPS 1), trunk utilization, and server resource metrics.
-
-![VoIP Server Dashboard](screenshots/02-voip-server-dashboard.png)
-
-### 3. SIP User Configuration
-MagnusBilling SIP user configuration panel showing the `demo` account with MicroSIP softphone registered as a client. Codec configuration: G.729, G.711A (alaw/ulaw), GSM.
-
-![SIP Configuration](screenshots/03-voip-server-sip-configuration.png)
-
-### 4. Wireshark Live Packet Capture
-Live capture on the Wi-Fi 2 interface showing mixed traffic: SIP signaling (INVITE, 401, ACK, 100 Trying), HTTP, TCP, TLS, NBNS, and UDP packets between the VoIP server and client.
-
-![Wireshark Capture](screenshots/04-wireshark-live-capture.png)
-
-### 5. RTP Streams Detected
-Wireshark RTP Streams window displaying 6 detected streams between `192.168.1.5` and `195.35.6.83` with G.711A codec, showing packet counts, jitter metrics, and delta timing analysis.
-
-![RTP Streams](screenshots/05-rtp-streams-detected.png)
-
-### 6. RTP Stream Analysis - Jitter/Delta Graph
-Graphical analysis of all 6 RTP streams plotting jitter, delta, difference, and skew values over arrival time. Consistent ~20ms delta confirms stable G.711A transmission.
-
-![RTP Analysis Graph](screenshots/06-rtp-stream-analysis-graph.png)
-
-### 7. RTP Stream Analysis - Packet-Level Detail
-Per-packet analysis of Stream 0 (`192.168.1.6:4008 -> 195.35.6.83:13890`) showing sequence numbers, delta timing, jitter, skew, and bandwidth. SSRC: `0x75f66e1a`, 1413 packets, 0 lost, duration: 28.24s.
-
-![RTP Analysis Packets](screenshots/07-rtp-stream-analysis-packets.png)
-
-### 8. RTP Player - Audio Waveform Playback
-Wireshark RTP Player showing decoded audio waveforms for the intercepted call streams. Both sides of the conversation are visible as separate waveforms, ready for full-duplex playback.
-
-![RTP Player](screenshots/08-rtp-player-audio-playback.png)
-
-### 9. Reconstructed VoIP Calls
-Wireshark VoIP Calls view showing 2 completed SIP calls from `<sip:demo@195.35.6.83>` with durations of 52s and 18s, both in `COMPLETED` state.
-
-![VoIP Calls](screenshots/09-voip-calls-reconstructed.png)
-
 ## Packet Captures
 
 Raw packet captures are included in the `captures/` directory for independent analysis:
